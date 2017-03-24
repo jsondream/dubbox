@@ -25,6 +25,7 @@ import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.RpcInvocation;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -52,6 +53,15 @@ public class StatItemTest {
         assertEquals(true, statItem.isAllowable(url, invocation));
         assertTrue(lastResetTime != statItem.getLastResetTime());
         assertEquals(4, statItem.getToken());
+
+        assertEquals(true, statItem.isAllowable(url, invocation));
+        assertEquals(true, statItem.isAllowable(url, invocation));
+        assertEquals(true, statItem.isAllowable(url, invocation));
+        assertEquals(true, statItem.isAllowable(url, invocation));
+        assertFalse(statItem.isAllowable(url, invocation));
+        Thread.sleep(1000L);
+        assertEquals(true, statItem.isAllowable(url, invocation));
+
     }
 
 }
