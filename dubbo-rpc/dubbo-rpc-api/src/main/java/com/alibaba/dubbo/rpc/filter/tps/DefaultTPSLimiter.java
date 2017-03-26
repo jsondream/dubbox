@@ -33,6 +33,7 @@ public class DefaultTPSLimiter implements TPSLimiter {
     
     public boolean isAllowable(URL url, Invocation invocation) {
         int rate = url.getParameter(Constants.TPS_LIMIT_RATE_KEY, -1);
+        // 默认是对每分钟进行tps的限流
         long interval = url.getParameter(Constants.TPS_LIMIT_INTERVAL_KEY,
                                          Constants.DEFAULT_TPS_LIMIT_INTERVAL);
         String serviceKey = url.getServiceKey();

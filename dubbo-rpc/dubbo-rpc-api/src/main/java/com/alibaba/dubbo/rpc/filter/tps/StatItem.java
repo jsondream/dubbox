@@ -22,18 +22,23 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.rpc.Invocation;
 
 /**
+ * 类似令牌桶的限流方式
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  */
 class StatItem {
 
     private String name;
 
+    // 下一次重置的时间
     private long lastResetTime;
 
+    // 每次重置的间隔时间
     private long interval;
 
+    // 令牌容器:每个数值都代表一个令牌
     private AtomicInteger token;
 
+    // 默认令牌的平均个数
     private int rate;
 
     StatItem(String name, int rate, long interval) {
@@ -46,6 +51,7 @@ class StatItem {
 
     public boolean isAllowable(URL url, Invocation invocation) {
         long now = System.currentTimeMillis();
+        // 判断是否到重置的时间了
         if (now > lastResetTime + interval) {
             token.set(rate);
             lastResetTime = now;
@@ -53,6 +59,7 @@ class StatItem {
 
         int value = token.get();
         boolean flag = false;
+        // 利用cas的方式去桶中拿令牌
         while (value > 0 && !flag) {
             flag = token.compareAndSet(value, value - 1);
             value = token.get();
